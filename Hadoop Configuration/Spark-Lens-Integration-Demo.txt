@@ -1,0 +1,517 @@
+karthik@Ubuntu-24:~/spark$ spark-shell   --packages qubole:sparklens:0.3.2-s_2.11   --conf spark.extraListeners=com.qubole.sparklens.QuboleJobListener --executor-cores 1 --num-executors 1
+
+Ivy Default Cache set to: /home/karthik/.ivy2/cache
+The jars for the packages stored in: /home/karthik/.ivy2/jars
+:: loading settings :: url = jar:file:/home/karthik/spark/jars/ivy-2.4.0.jar!/org/apache/ivy/core/settings/ivysettings.xml
+qubole#sparklens added as a dependency
+:: resolving dependencies :: org.apache.spark#spark-submit-parent-89eade1b-aa8e-4061-b39d-0f1c1edc6c1e;1.0
+	confs: [default]
+	found qubole#sparklens;0.3.2-s_2.11 in spark-packages
+:: resolution report :: resolve 406ms :: artifacts dl 3ms
+	:: modules in use:
+	qubole#sparklens;0.3.2-s_2.11 from spark-packages in [default]
+	---------------------------------------------------------------------
+	|                  |            modules            ||   artifacts   |
+	|       conf       | number| search|dwnlded|evicted|| number|dwnlded|
+	---------------------------------------------------------------------
+	|      default     |   1   |   0   |   0   |   0   ||   1   |   0   |
+	---------------------------------------------------------------------
+:: retrieving :: org.apache.spark#spark-submit-parent-89eade1b-aa8e-4061-b39d-0f1c1edc6c1e
+	confs: [default]
+	0 artifacts copied, 1 already retrieved (0kB/6ms)
+25/07/28 15:12:00 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+Spark context Web UI available at http://Ubuntu-24:4040
+Spark context available as 'sc' (master = local[*], app id = local-1753695743107).
+Spark session available as 'spark'.
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 2.4.8
+      /_/
+         
+Using Scala version 2.11.12 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_441)
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val file = sc.textFile("hdfs://localhost:9000/word.txt")
+file: org.apache.spark.rdd.RDD[String] = hdfs://localhost:9000/word.txt MapPartitionsRDD[1] at textFile at <console>:24
+
+scala> val file = sc.textFile("hdfs://localhost:9000/word.txt")
+mapdata: org.apache.spark.rdd.RDD[(String, Int)] = MapPartitionsRDD[3] at map at <console>:25
+
+scala> val reducedata = mapdata.reduceByKey(_ + _)
+reducedata: org.apache.spark.rdd.RDD[(String, Int)] = ShuffledRDD[4] at reduceByKey at <console>:25
+
+scala> reducedata.collect().foreach(println)
+[Stage 0:>                                                          (0 + 2) /                                                                               (learning,1)
+(hello,1)
+(spark,1)
+(hi,2)
+(?,1)
+
+scala> 
+
+scala> reducedata.saveAsTextFile("sss");
+[Stage 3:>                                                          (0 + 2) /                                                                                 
+scala> Saving sparkLens data to /tmp/sparklens//local-1753695743107.sparklens.json      // after saving this we need to exit from scala terminal. So we can see the integration of the file 
+
+Printing application meterics. These metrics are collected at task-level granularity and aggregated across the app (all tasks, stages, and jobs).
+
+ AggregateMetrics (Application Metrics) total measurements 6 
+                NAME                        SUM                MIN           MAX                MEAN         
+ diskBytesSpilled                            0.0 KB         0.0 KB         0.0 KB              0.0 KB
+ executorRuntime                             1.5 ss        56.0 ms       402.0 ms            248.0 ms
+ inputBytesRead                              0.0 KB         0.0 KB         0.0 KB              0.0 KB
+ jvmGCTime                                   0.0 ms         0.0 ms         0.0 ms              0.0 ms
+ memoryBytesSpilled                          0.0 KB         0.0 KB         0.0 KB              0.0 KB
+ outputBytesWritten                          0.1 KB         0.0 KB         0.0 KB              0.0 KB
+ peakExecutionMemory                         5.2 KB         0.0 KB         1.3 KB              0.9 KB
+ resultSize                                  7.6 KB         1.0 KB         1.5 KB              1.3 KB
+ shuffleReadBytesRead                        0.2 KB         0.0 KB         0.1 KB              0.0 KB
+ shuffleReadFetchWaitTime                    0.0 ms         0.0 ms         0.0 ms              0.0 ms
+ shuffleReadLocalBlocks                           4              0              1                   0
+ shuffleReadRecordsRead                          10              0              3                   1
+ shuffleReadRemoteBlocks                          0              0              0                   0
+ shuffleWriteBytesWritten                    0.1 KB         0.0 KB         0.1 KB              0.0 KB
+ shuffleWriteRecordsWritten                       5              0              5                   0
+ shuffleWriteTime                           24.0 ms         0.0 ms        14.3 ms              4.0 ms
+ taskDuration                                4.0 ss        67.0 ms         1.5 ss            671.0 ms
+
+
+
+
+Total Hosts 1, and the maximum concurrent hosts = 1
+
+
+Host localhost startTime 03:12:23:464 executors count 1
+Done printing host timeline
+======================
+
+
+
+Printing executors timeline....
+
+Total Executors 1, and maximum concurrent executors = 1
+At 03:12 executors added 1 & removed  0 currently available 1
+
+Done printing executors timeline...
+============================
+
+
+
+Printing Application timeline 
+
+03:12:19:437 app started 
+03:12:59:543 JOB 0 started : duration 00m 01s 
+[      0        |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||      ]
+[      1                                                                             ||| ]
+03:12:59:698      Stage 0 started : duration 00m 01s 
+03:13:01:149      Stage 0 ended : maxTaskTime 402 taskCount 2
+03:13:01:190      Stage 1 started : duration 00m 00s 
+03:13:01:263      Stage 1 ended : maxTaskTime 58 taskCount 2
+03:13:01:268 JOB 0 ended 
+03:13:53:495 JOB 1 started : duration 00m 00s 
+[      3                        |||||||||||||||||||||||||||||||||||||||||||||||||||||||| ]
+03:13:53:708      Stage 3 started : duration 00m 00s 
+03:13:54:214      Stage 3 ended : maxTaskTime 298 taskCount 2
+03:13:54:219 JOB 1 ended 
+03:14:22:854 app ended 
+
+
+
+Checking for job overlap...
+
+ 
+ JobGroup 1  SQLExecID (-1)
+ Number of Jobs 1  JobIDs(0)
+ Timing [03:12:59:543 - 03:13:01:268]
+ Duration  00m 01s
+ 
+ JOB 0 Start 03:12:59:543  End 03:13:01:268
+ 
+ 
+ JobGroup 2  SQLExecID (-1)
+ Number of Jobs 1  JobIDs(1)
+ Timing [03:13:53:495 - 03:13:54:219]
+ Duration  00m 00s
+ 
+ JOB 1 Start 03:13:53:495  End 03:13:54:219
+ 
+
+No overlapping jobgroups found. Good
+
+
+
+
+ Time spent in Driver vs Executors
+ Driver WallClock Time    02m 00s   98.02%
+ Executor WallClock Time  00m 02s   1.98%
+ Total WallClock Time     02m 03s
+      
+
+
+Minimum possible time for the app based on the critical path (with infinite resources)   02m 01s
+Minimum possible time for the app with same executors, perfect parallelism and zero skew 02m 01s
+If we were to run this app with single executor and single core                          00h 02m
+
+       
+ Total cores available to the app 4
+
+ OneCoreComputeHours: Measure of total compute power available from cluster. One core in the executor, running
+                      for one hour, counts as one OneCoreComputeHour. Executors with 4 cores, will have 4 times
+                      the OneCoreComputeHours compared to one with just one core. Similarly, one core executor
+                      running for 4 hours will OnCoreComputeHours equal to 4 core executor running for 1 hour.
+
+ Driver Utilization (Cluster idle because of driver)
+
+ Total OneCoreComputeHours available                             00h 08m
+ Total OneCoreComputeHours available (AutoScale Aware)           00h 07m
+ OneCoreComputeHours wasted by driver                            00h 08m
+
+ AutoScale Aware: Most of the calculations by this tool will assume that all executors are available throughout
+                  the runtime of the application. The number above is printed to show possible caution to be
+                  taken in interpreting the efficiency metrics.
+
+ Cluster Utilization (Executors idle because of lack of tasks or skew)
+
+ Executor OneCoreComputeHours available                  00h 00m
+ Executor OneCoreComputeHours used                       00h 00m        15.22%
+ OneCoreComputeHours wasted                              00h 00m        84.78%
+
+ App Level Wastage Metrics (Driver + Executor)
+
+ OneCoreComputeHours wasted Driver               98.02%
+ OneCoreComputeHours wasted Executor             1.68%
+ OneCoreComputeHours wasted Total                99.70%
+
+       
+
+
+ App completion time and cluster utilization estimates with different executor counts
+
+ Real App Duration 02m 03s
+ Model Estimation  02m 01s
+ Model Error       1%
+
+ NOTE: 1) Model error could be large when auto-scaling is enabled.
+       2) Model doesn't handles multiple jobs run via thread-pool. For better insights into
+          application scalability, please try such jobs one by one without thread-pool.
+
+       
+ Executor count     1  (100%) estimated time 02m 01s and estimated cluster utilization 0.31%
+ Executor count     1  (110%) estimated time 02m 01s and estimated cluster utilization 0.31%
+ Executor count     1  (120%) estimated time 02m 01s and estimated cluster utilization 0.31%
+ Executor count     1  (150%) estimated time 02m 01s and estimated cluster utilization 0.31%
+ Executor count     2  (200%) estimated time 02m 01s and estimated cluster utilization 0.15%
+ Executor count     3  (300%) estimated time 02m 01s and estimated cluster utilization 0.10%
+ Executor count     4  (400%) estimated time 02m 01s and estimated cluster utilization 0.08%
+ Executor count     5  (500%) estimated time 02m 01s and estimated cluster utilization 0.06%
+
+
+
+Total tasks in all stages 6
+Per Stage  Utilization
+Stage-ID   Wall    Task      Task     IO%    Input     Output    ----Shuffle-----    -WallClockTime-    --OneCoreComputeHours---   MaxTaskMem
+          Clock%  Runtime%   Count                               Input  |  Output    Measured | Ideal   Available| Used%|Wasted%                                  
+       0   71.00   53.86         2    9.2    0.0 KB    0.0 KB    0.0 KB    0.1 KB    00m 01s   00m 00s    00h 00m   13.8   86.2    1.3 KB 
+       1    3.00    7.65         2    0.0    0.0 KB    0.0 KB    0.1 KB    0.0 KB    00m 00s   00m 00s    00h 00m   39.0   61.0    1.9 KB 
+       3   24.00   38.50         2    0.0    0.0 KB    0.1 KB    0.1 KB    0.0 KB    00m 00s   00m 00s    00h 00m   28.4   71.6    1.9 KB 
+Max memory which an executor could have taken =   1.9 KB
+
+
+ Stage-ID WallClock  OneCore       Task   PRatio    -----Task------   OIRatio  |* ShuffleWrite% ReadFetch%   GC%  *|
+          Stage%     ComputeHours  Count            Skew   StageSkew                                                
+      0   71.48         00h 00m       2    0.50     1.00     0.28     2.86     |*   2.98           0.00     0.00  *|
+      1    3.60         00h 00m       2    0.50     1.00     0.79     0.00     |*   0.00           0.00     0.00  *|
+      3   24.93         00h 00m       2    0.50     1.00     0.59     0.43     |*   0.00           0.00     0.00  *|
+
+PRatio:        Number of tasks in stage divided by number of cores. Represents degree of
+               parallelism in the stage
+TaskSkew:      Duration of largest task in stage divided by duration of median task.
+               Represents degree of skew in the stage
+TaskStageSkew: Duration of largest task in stage divided by total duration of the stage.
+               Represents the impact of the largest task on stage time.
+OIRatio:       Output to input ration. Total output of the stage (results + shuffle write)
+               divided by total input (input data + shuffle read)
+
+These metrics below represent distribution of time within the stage
+
+ShuffleWrite:  Amount of time spent in shuffle writes across all tasks in the given
+               stage as a percentage
+ReadFetch:     Amount of time spent in shuffle read across all tasks in the given
+               stage as a percentage
+GC:            Amount of time spent in GC across all tasks in the given stage as a
+               percentage
+
+If the stage contributes large percentage to overall application time, we could look into
+these metrics to check which part (Shuffle write, read fetch or GC is responsible)
+
+
+
+
+
+-- Another example 
+
+
+karthik@Ubuntu-24:~/spark$ spark-shell   --packages qubole:sparklens:0.3.2-s_2.11   --conf spark.extraListeners=com.qubole.sparklens.QuboleJobListener --executor-cores 1 --num-executors 1
+
+Ivy Default Cache set to: /home/karthik/.ivy2/cache
+The jars for the packages stored in: /home/karthik/.ivy2/jars
+:: loading settings :: url = jar:file:/home/karthik/spark/jars/ivy-2.4.0.jar!/org/apache/ivy/core/settings/ivysettings.xml
+qubole#sparklens added as a dependency
+:: resolving dependencies :: org.apache.spark#spark-submit-parent-effe763d-4417-4700-8af9-10ed432f6c8d;1.0
+	confs: [default]
+	found qubole#sparklens;0.3.2-s_2.11 in spark-packages
+:: resolution report :: resolve 169ms :: artifacts dl 2ms
+	:: modules in use:
+	qubole#sparklens;0.3.2-s_2.11 from spark-packages in [default]
+	---------------------------------------------------------------------
+	|                  |            modules            ||   artifacts   |
+	|       conf       | number| search|dwnlded|evicted|| number|dwnlded|
+	---------------------------------------------------------------------
+	|      default     |   1   |   0   |   0   |   0   ||   1   |   0   |
+	---------------------------------------------------------------------
+:: retrieving :: org.apache.spark#spark-submit-parent-effe763d-4417-4700-8af9-10ed432f6c8d
+	confs: [default]
+	0 artifacts copied, 1 already retrieved (0kB/4ms)
+25/07/28 17:26:49 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+Spark context Web UI available at http://Ubuntu-24:4040
+Spark context available as 'sc' (master = local[*], app id = local-1753703816200).
+Spark session available as 'spark'.
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 2.4.8
+      /_/
+         
+Using Scala version 2.11.12 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_441)
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val lines = sc.parallelize(Seq(
+     |   "Hello world",
+     |   "Hello Spark",
+     |   "Hello Scala"
+     | ))
+lines: org.apache.spark.rdd.RDD[String] = ParallelCollectionRDD[0] at parallelize at <console>:24
+
+scala> val words = lines.flatMap(line => line.split(" "))
+words: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[1] at flatMap at <console>:25
+
+scala> val wordPairs = words.map(word => (word, 1))
+wordPairs: org.apache.spark.rdd.RDD[(String, Int)] = MapPartitionsRDD[2] at map at <console>:25
+
+scala> val wordCounts = wordPairs.reduceByKey(_ + _)
+wordCounts: org.apache.spark.rdd.RDD[(String, Int)] = ShuffledRDD[3] at reduceByKey at <console>:25
+
+scala> wordCounts.collect().foreach(println)
+(Spark,1)
+(Hello,3)
+(Scala,1)
+(world,1)
+
+scala> wordCounts.saveAsTextFile("Spark_lens_integration")
+
+scala> Saving sparkLens data to /tmp/sparklens//local-1753703816200.sparklens.json     // after saving this we need to exit from scala terminal. So we can see the integration of the file 
+
+Printing application meterics. These metrics are collected at task-level granularity and aggregated across the app (all tasks, stages, and jobs).
+
+ AggregateMetrics (Application Metrics) total measurements 12 
+                NAME                        SUM                MIN           MAX                MEAN         
+ diskBytesSpilled                            0.0 KB         0.0 KB         0.0 KB              0.0 KB
+ executorRuntime                           496.0 ms        24.0 ms        53.0 ms             41.0 ms
+ inputBytesRead                              0.0 KB         0.0 KB         0.0 KB              0.0 KB
+ jvmGCTime                                   0.0 ms         0.0 ms         0.0 ms              0.0 ms
+ memoryBytesSpilled                          0.0 KB         0.0 KB         0.0 KB              0.0 KB
+ outputBytesWritten                          0.0 KB         0.0 KB         0.0 KB              0.0 KB
+ peakExecutionMemory                         6.9 KB         0.0 KB         1.1 KB              0.6 KB
+ resultSize                                 14.5 KB         1.0 KB         1.5 KB              1.2 KB
+ shuffleReadBytesRead                        0.4 KB         0.0 KB         0.2 KB              0.0 KB
+ shuffleReadFetchWaitTime                    0.0 ms         0.0 ms         0.0 ms              0.0 ms
+ shuffleReadLocalBlocks                           8              0              3                   0
+ shuffleReadRecordsRead                          12              0              5                   1
+ shuffleReadRemoteBlocks                          0              0              0                   0
+ shuffleWriteBytesWritten                    0.2 KB         0.0 KB         0.1 KB              0.0 KB
+ shuffleWriteRecordsWritten                       6              0              2                   0
+ shuffleWriteTime                            9.9 ms         0.0 ms         6.3 ms              0.8 ms
+ taskDuration                                1.3 ss        28.0 ms       234.0 ms            106.0 ms
+
+
+
+
+Total Hosts 1, and the maximum concurrent hosts = 1
+
+
+Host localhost startTime 05:26:56:302 executors count 1
+Done printing host timeline
+======================
+
+
+
+Printing executors timeline....
+
+Total Executors 1, and maximum concurrent executors = 1
+At 05:26 executors added 1 & removed  0 currently available 1
+
+Done printing executors timeline...
+============================
+
+
+
+Printing Application timeline 
+
+05:26:55:243 app started 
+05:27:55:971 JOB 0 started : duration 00m 00s 
+[      0                       ||||||||||||||||||||||||||||||||||||||||||||||            ]
+[      1                                                                         ||||||| ]
+05:27:56:088      Stage 0 started : duration 00m 00s 
+05:27:56:322      Stage 0 ended : maxTaskTime 53 taskCount 4
+05:27:56:340      Stage 1 started : duration 00m 00s 
+05:27:56:377      Stage 1 ended : maxTaskTime 32 taskCount 4
+05:27:56:379 JOB 0 ended 
+05:28:43:734 JOB 1 started : duration 00m 00s 
+[      3            |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| ]
+05:28:43:746      Stage 3 started : duration 00m 00s 
+05:28:43:815      Stage 3 ended : maxTaskTime 49 taskCount 4
+05:28:43:816 JOB 1 ended 
+05:28:46:862 app ended 
+
+
+
+Checking for job overlap...
+
+ 
+ JobGroup 1  SQLExecID (-1)
+ Number of Jobs 1  JobIDs(0)
+ Timing [05:27:55:971 - 05:27:56:379]
+ Duration  00m 00s
+ 
+ JOB 0 Start 05:27:55:971  End 05:27:56:379
+ 
+ 
+ JobGroup 2  SQLExecID (-1)
+ Number of Jobs 1  JobIDs(1)
+ Timing [05:28:43:734 - 05:28:43:816]
+ Duration  00m 00s
+ 
+ JOB 1 Start 05:28:43:734  End 05:28:43:816
+ 
+
+No overlapping jobgroups found. Good
+
+
+
+
+ Time spent in Driver vs Executors
+ Driver WallClock Time    01m 51s   99.56%
+ Executor WallClock Time  00m 00s   0.44%
+ Total WallClock Time     01m 51s
+      
+
+
+Minimum possible time for the app based on the critical path (with infinite resources)   01m 51s
+Minimum possible time for the app with same executors, perfect parallelism and zero skew 01m 51s
+If we were to run this app with single executor and single core                          00h 01m
+
+       
+ Total cores available to the app 4
+
+ OneCoreComputeHours: Measure of total compute power available from cluster. One core in the executor, running
+                      for one hour, counts as one OneCoreComputeHour. Executors with 4 cores, will have 4 times
+                      the OneCoreComputeHours compared to one with just one core. Similarly, one core executor
+                      running for 4 hours will OnCoreComputeHours equal to 4 core executor running for 1 hour.
+
+ Driver Utilization (Cluster idle because of driver)
+
+ Total OneCoreComputeHours available                             00h 07m
+ Total OneCoreComputeHours available (AutoScale Aware)           00h 07m
+ OneCoreComputeHours wasted by driver                            00h 07m
+
+ AutoScale Aware: Most of the calculations by this tool will assume that all executors are available throughout
+                  the runtime of the application. The number above is printed to show possible caution to be
+                  taken in interpreting the efficiency metrics.
+
+ Cluster Utilization (Executors idle because of lack of tasks or skew)
+
+ Executor OneCoreComputeHours available                  00h 00m
+ Executor OneCoreComputeHours used                       00h 00m        25.31%
+ OneCoreComputeHours wasted                              00h 00m        74.69%
+
+ App Level Wastage Metrics (Driver + Executor)
+
+ OneCoreComputeHours wasted Driver               99.56%
+ OneCoreComputeHours wasted Executor             0.33%
+ OneCoreComputeHours wasted Total                99.89%
+
+       
+
+
+ App completion time and cluster utilization estimates with different executor counts
+
+ Real App Duration 01m 51s
+ Model Estimation  01m 51s
+ Model Error       0%
+
+ NOTE: 1) Model error could be large when auto-scaling is enabled.
+       2) Model doesn't handles multiple jobs run via thread-pool. For better insights into
+          application scalability, please try such jobs one by one without thread-pool.
+
+       
+ Executor count     1  (100%) estimated time 01m 51s and estimated cluster utilization 0.11%
+ Executor count     1  (110%) estimated time 01m 51s and estimated cluster utilization 0.11%
+ Executor count     1  (120%) estimated time 01m 51s and estimated cluster utilization 0.11%
+ Executor count     1  (150%) estimated time 01m 51s and estimated cluster utilization 0.11%
+ Executor count     2  (200%) estimated time 01m 51s and estimated cluster utilization 0.06%
+ Executor count     3  (300%) estimated time 01m 51s and estimated cluster utilization 0.04%
+ Executor count     4  (400%) estimated time 01m 51s and estimated cluster utilization 0.03%
+ Executor count     5  (500%) estimated time 01m 51s and estimated cluster utilization 0.02%
+
+
+
+Total tasks in all stages 12
+Per Stage  Utilization
+Stage-ID   Wall    Task      Task     IO%    Input     Output    ----Shuffle-----    -WallClockTime-    --OneCoreComputeHours---   MaxTaskMem
+          Clock%  Runtime%   Count                               Input  |  Output    Measured | Ideal   Available| Used%|Wasted%                                  
+       0   68.00   42.14         4    0.0    0.0 KB    0.0 KB    0.0 KB    0.2 KB    00m 00s   00m 00s    00h 00m   22.3   77.7    3.2 KB 
+       1   10.00   21.77         4    0.0    0.0 KB    0.0 KB    0.2 KB    0.0 KB    00m 00s   00m 00s    00h 00m   73.0   27.0    1.8 KB 
+       3   20.00   36.09         4    0.0    0.0 KB    0.0 KB    0.2 KB    0.0 KB    00m 00s   00m 00s    00h 00m   64.9   35.1    1.8 KB 
+Max memory which an executor could have taken =   3.2 KB
+
+
+ Stage-ID WallClock  OneCore       Task   PRatio    -----Task------   OIRatio  |* ShuffleWrite% ReadFetch%   GC%  *|
+          Stage%     ComputeHours  Count            Skew   StageSkew                                                
+      0   68.82         00h 00m       4    1.00     1.00     0.23     0.00     |*   4.76           0.00     0.00  *|
+      1   10.88         00h 00m       4    1.00     1.19     0.86     0.00     |*   0.00           0.00     0.00  *|
+      3   20.29         00h 00m       4    1.00     1.04     0.71     0.22     |*   0.00           0.00     0.00  *|
+
+PRatio:        Number of tasks in stage divided by number of cores. Represents degree of
+               parallelism in the stage
+TaskSkew:      Duration of largest task in stage divided by duration of median task.
+               Represents degree of skew in the stage
+TaskStageSkew: Duration of largest task in stage divided by total duration of the stage.
+               Represents the impact of the largest task on stage time.
+OIRatio:       Output to input ration. Total output of the stage (results + shuffle write)
+               divided by total input (input data + shuffle read)
+
+These metrics below represent distribution of time within the stage
+
+ShuffleWrite:  Amount of time spent in shuffle writes across all tasks in the given
+               stage as a percentage
+ReadFetch:     Amount of time spent in shuffle read across all tasks in the given
+               stage as a percentage
+GC:            Amount of time spent in GC across all tasks in the given stage as a
+               percentage
+
+If the stage contributes large percentage to overall application time, we could look into
+these metrics to check which part (Shuffle write, read fetch or GC is responsible)
+
+
+      
