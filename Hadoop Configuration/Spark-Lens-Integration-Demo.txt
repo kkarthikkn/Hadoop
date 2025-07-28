@@ -254,7 +254,7 @@ these metrics to check which part (Shuffle write, read fetch or GC is responsibl
 
 
 
-<h3>Another example </h3>
+-- Another example
 
 
 karthik@Ubuntu-24:~/spark$ spark-shell   --packages qubole:sparklens:0.3.2-s_2.11   --conf spark.extraListeners=com.qubole.sparklens.QuboleJobListener --executor-cores 1 --num-executors 1
