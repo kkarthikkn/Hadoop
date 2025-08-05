@@ -1,0 +1,79 @@
+scala> import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.SparkSession
+
+scala> import spark.implicits._;
+import spark.implicits._
+
+scala> 
+
+scala> val spark = SparkSession.builder().appName("LeftJoinExecutionPlan").master("local[*]").getOrCreate();
+25/08/05 22:39:56 WARN SparkSession$Builder: Using an existing SparkSession; some spark core configurations may not take effect.
+spark: org.apache.spark.sql.SparkSession = org.apache.spark.sql.SparkSession@1976008c
+
+scala> 
+
+scala> val employeeData = Seq((1, "Alice", 10), (2, "Bob", 20), (3, "Charlie", 10), (4, "David", 30), (5, "Eve", 50), (6, "Frank", 40));
+employeeData: Seq[(Int, String, Int)] = List((1,Alice,10), (2,Bob,20), (3,Charlie,10), (4,David,30), (5,Eve,50), (6,Frank,40))
+
+scala> val employeeDF = employeeData.toDF("emp_id", "name", "dept_id");
+employeeDF: org.apache.spark.sql.DataFrame = [emp_id: int, name: string ... 1 more field]
+
+scala> 
+
+scala> val deptData = Seq((10, "HR"), (20, "Finance"), (30, "Engineering"), (50, "Marketing"), (60, "Support"), (70, "Sales"));
+deptData: Seq[(Int, String)] = List((10,HR), (20,Finance), (30,Engineering), (50,Marketing), (60,Support), (70,Sales))
+
+scala> val deptDF = deptData.toDF("dept_id", "dept_name");
+deptDF: org.apache.spark.sql.DataFrame = [dept_id: int, dept_name: string]
+
+scala> 
+
+scala> val joinedDF = employeeDF.join(deptDF, Seq("dept_id"), "left");
+joinedDF: org.apache.spark.sql.DataFrame = [dept_id: int, emp_id: int ... 2 more fields]
+
+scala> 
+
+scala> joinedDF.show();
++-------+------+-------+-----------+
+|dept_id|emp_id|   name|  dept_name|
++-------+------+-------+-----------+
+|     10|     1|  Alice|         HR|
+|     20|     2|    Bob|    Finance|
+|     10|     3|Charlie|         HR|
+|     30|     4|  David|Engineering|
+|     50|     5|    Eve|  Marketing|
+|     40|     6|  Frank|       null|
++-------+------+-------+-----------+
+
+
+scala> joinedDF.explain(true);
+== Parsed Logical Plan ==
+'Join UsingJoin(LeftOuter,List(dept_id))
+:- Project [_1#21 AS emp_id#25, _2#22 AS name#26, _3#23 AS dept_id#27]
+:  +- LocalRelation [_1#21, _2#22, _3#23]
++- Project [_1#33 AS dept_id#36, _2#34 AS dept_name#37]
+   +- LocalRelation [_1#33, _2#34]
+
+== Analyzed Logical Plan ==
+dept_id: int, emp_id: int, name: string, dept_name: string
+Project [dept_id#27, emp_id#25, name#26, dept_name#37]
++- Join LeftOuter, (dept_id#27 = dept_id#36)
+   :- Project [_1#21 AS emp_id#25, _2#22 AS name#26, _3#23 AS dept_id#27]
+   :  +- LocalRelation [_1#21, _2#22, _3#23]
+   +- Project [_1#33 AS dept_id#36, _2#34 AS dept_name#37]
+      +- LocalRelation [_1#33, _2#34]
+
+== Optimized Logical Plan ==
+Project [dept_id#27, emp_id#25, name#26, dept_name#37]
++- Join LeftOuter, (dept_id#27 = dept_id#36)
+   :- LocalRelation [emp_id#25, name#26, dept_id#27]
+   +- LocalRelation [dept_id#36, dept_name#37]
+
+== Physical Plan ==
+*(1) Project [dept_id#27, emp_id#25, name#26, dept_name#37]
++- *(1) BroadcastHashJoin [dept_id#27], [dept_id#36], LeftOuter, BuildRight
+   :- LocalTableScan [emp_id#25, name#26, dept_id#27]
+   +- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[0, int, false] as bigint)))
+      +- LocalTableScan [dept_id#36, dept_name#37]
+
+
